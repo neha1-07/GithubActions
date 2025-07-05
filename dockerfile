@@ -1,29 +1,12 @@
-name: Docker CI/CD
+FROM python:3.9-slim
 
-on:
-  push:
-    branches: [main]   # Triggers when pushing to the main branch
+WORKDIR /app
 
-jobs:
-  build-and-push:
-    runs-on: ubuntu-latest
+COPY requirements.txt .
+RUN pip install -r requirements.txt
 
-    steps:
-    - name: Checkout source code
-      uses: actions/checkout@v3
+COPY . .
 
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v3
+EXPOSE 5000
 
-    - name: Log in to Docker Hub
-      uses: docker/login-action@v3
-      with:
-        username: ${{ secrets.DOCKER_USERNAME }}       
-        password: ${{ secrets.DOCKER_PASSWORD }}       
-
-    - name: Build and push Docker image
-      uses: docker/build-push-action@v5
-      with:
-        context: .
-        push: true
-        tags: tenet00/testforactions:latest
+CMD ["python", "app.py"]
